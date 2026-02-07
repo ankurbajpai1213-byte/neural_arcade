@@ -37,11 +37,11 @@
     .page {
       display: none;
       min-height: 100vh;
-      animation: fadeIn 0.4s ease-in;
     }
 
     .page.active {
       display: block;
+      animation: fadeIn 0.4s ease-in;
     }
 
     @keyframes fadeIn {
@@ -120,7 +120,6 @@
       -webkit-text-fill-color: transparent;
       background-clip: text;
       margin-bottom: 20px;
-      text-shadow: 0 0 40px var(--glow-cyan);
       animation: glowPulse 3s ease-in-out infinite;
     }
 
@@ -310,6 +309,7 @@
       z-index: 1000;
       transition: all 0.3s ease;
       display: none;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
     .back-button.visible {
@@ -320,13 +320,6 @@
       background: var(--accent-cyan);
       color: var(--primary-bg);
       transform: translateX(-4px);
-    }
-
-    /* Game Container */
-    .game-container {
-      width: 100%;
-      height: 100vh;
-      overflow: auto;
     }
 
     /* Responsive Design */
@@ -355,7 +348,7 @@
   <div class="bg-grid"></div>
 
   <!-- Back Button -->
-  <button class="back-button" id="backButton" onclick="showLanding()">
+  <button class="back-button" id="backButton">
     ← Back to Hub
   </button>
 
@@ -475,5 +468,1883 @@
 
   <!-- ==================== NAVIGATION SCRIPT ==================== -->
   <script>
-    // The complete games will be loaded here
-    const GAME_HTML = {};
+    // Generate floating particles
+    function createParticles() {
+      const particleCount = 20;
+      for (let i = 0; i < particleCount; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.top = Math.random() * 100 + '%';
+        particle.style.animationDelay = Math.random() * 15 + 's';
+        particle.style.animationDuration = (10 + Math.random() * 10) + 's';
+        document.body.appendChild(particle);
+      }
+    }
+
+    createParticles();
+
+    // Store game HTML
+    const GAMES = {
+      game1: `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Market Prophet: Seeded Futures</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <style>
+    :root {
+      --bg: #050816;
+      --panel: #111827;
+      --accent: #38bdf8;
+      --accent-soft: rgba(56,189,248,0.18);
+      --danger: #f97373;
+      --ok: #4ade80;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --card: #020617;
+      --border: #1f2937;
+      --shadow: 0 18px 40px rgba(0,0,0,0.75);
+      --radius: 14px;
+      --transition: 0.18s ease-out;
+      --font-main: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: var(--font-main);
+      background: radial-gradient(circle at top, #1f2933 0, #020617 50%, #000 100%);
+      color: var(--text);
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+    }
+
+    .game-root {
+      width: 100%;
+      max-width: 960px;
+      margin: 16px;
+      padding: 16px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, rgba(15,23,42,0.96), rgba(15,23,42,0.98));
+      border: 1px solid rgba(148,163,184,0.14);
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      gap: 10px 16px;
+      border-bottom: 1px solid rgba(148,163,184,0.18);
+      padding-bottom: 12px;
+    }
+
+    .title-block {
+      flex: 1;
+      min-width: 220px;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      letter-spacing: 0.03em;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    h1 span.logo-pill {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(56,189,248,0.6);
+      color: var(--accent);
+      background: radial-gradient(circle at top, rgba(56,189,248,0.16), transparent 70%);
+    }
+
+    header p {
+      margin-top: 4px;
+      font-size: 0.85rem;
+      color: var(--muted);
+      max-width: 460px;
+    }
+
+    .seed-controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .seed-controls input {
+      background: rgba(15,23,42,0.9);
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.5);
+      color: var(--text);
+      padding: 5px 10px;
+      width: 110px;
+      outline: none;
+    }
+
+    .seed-controls button {
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.4);
+      background: rgba(15,23,42,0.6);
+      color: var(--text);
+      padding: 4px 10px;
+      cursor: pointer;
+      font-size: 0.78rem;
+      transition: var(--transition);
+    }
+
+    .seed-controls button:hover {
+      background: rgba(31,41,55,0.9);
+    }
+
+    .badge {
+      font-size: 0.72rem;
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.45);
+      color: var(--muted);
+    }
+
+    .layout-main {
+      display: grid;
+      grid-template-columns: minmax(0, 3.2fr) minmax(0, 1.6fr);
+      gap: 16px;
+    }
+
+    @media (max-width: 800px) {
+      .layout-main {
+        grid-template-columns: minmax(0,1fr);
+      }
+    }
+
+    /* Left side: cards and log */
+
+    .cards-panel {
+      background: radial-gradient(circle at top left, rgba(15,23,42,0.9), rgba(15,23,42,0.98));
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      padding: 14px 14px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cards-panel::before {
+      content: "";
+      position: absolute;
+      inset: -40%;
+      background:
+        radial-gradient(circle at 0 0, rgba(56,189,248,0.16), transparent 60%),
+        radial-gradient(circle at 100% 0, rgba(129,140,248,0.12), transparent 55%);
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
+    .cards-panel-inner {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .top-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 0.8rem;
+    }
+
+    .top-bar .left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .pill {
+      padding: 2px 7px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.5);
+      color: var(--muted);
+    }
+
+    .pill strong {
+      color: var(--accent);
+      margin-right: 4px;
+    }
+
+    .top-bar .right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #22c55e, #047857);
+      box-shadow: 0 0 0 4px rgba(34,197,94,0.25);
+    }
+
+    .choices-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0,1fr));
+      gap: 10px;
+    }
+
+    @media (max-width: 640px) {
+      .choices-row {
+        grid-template-columns: minmax(0,1fr);
+      }
+    }
+
+    .card {
+      position: relative;
+      border-radius: 16px;
+      border: 1px solid rgba(148,163,184,0.45);
+      background: radial-gradient(circle at top, rgba(15,23,42,0.96), rgba(15,23,42,0.99));
+      padding: 10px 11px;
+      cursor: pointer;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      transition: transform var(--transition), box-shadow var(--transition),
+        border-color var(--transition), background 0.2s ease-out;
+      box-shadow: 0 8px 24px rgba(15,23,42,0.85);
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: -40%;
+      background:
+        radial-gradient(circle at 0 0, rgba(56,189,248,0.22), transparent 60%);
+      opacity: 0;
+      transition: opacity var(--transition);
+      pointer-events: none;
+    }
+
+    .card:hover {
+      transform: translateY(-3px) translateZ(0);
+      box-shadow: 0 18px 40px rgba(0,0,0,0.9);
+      border-color: rgba(56,189,248,0.9);
+      background: radial-gradient(circle at top, rgba(15,23,42,1), rgba(15,23,42,1));
+    }
+
+    .card:hover::before {
+      opacity: 1;
+    }
+
+    .card.disabled {
+      cursor: default;
+      opacity: 0.5;
+      transform: none;
+      box-shadow: 0 4px 16px rgba(15,23,42,0.6);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 6px;
+    }
+
+    .card-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+
+    .card-tag {
+      font-size: 0.7rem;
+      padding: 2px 6px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.5);
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .card-body {
+      font-size: 0.78rem;
+      color: var(--muted);
+      min-height: 32px;
+    }
+
+    .card-metrics {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.74rem;
+      margin-top: 2px;
+    }
+
+    .return-range span {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .risk-pill {
+      padding: 2px 6px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      border: 1px solid rgba(148,163,184,0.4);
+    }
+
+    .risk-low {
+      color: #22c55e;
+      border-color: rgba(34,197,94,0.6);
+    }
+
+    .risk-med {
+      color: #eab308;
+      border-color: rgba(234,179,8,0.7);
+    }
+
+    .risk-high {
+      color: #fb7185;
+      border-color: rgba(248,113,113,0.7);
+    }
+
+    .log-panel {
+      border-radius: 12px;
+      border: 1px dashed rgba(148,163,184,0.7);
+      padding: 8px 10px;
+      background: rgba(15,23,42,0.9);
+      max-height: 170px;
+      overflow-y: auto;
+      font-size: 0.74rem;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .log-entry {
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    .log-entry strong {
+      color: var(--accent);
+    }
+
+    .log-entry-negative {
+      color: #fda4af;
+    }
+
+    .log-entry-positive {
+      color: #bbf7d0;
+    }
+
+    /* Right side: stats */
+
+    .stats-panel {
+      background: radial-gradient(circle at top right, rgba(15,23,42,0.96), rgba(15,23,42,0.99));
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      padding: 12px 12px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: 8px;
+      font-size: 0.8rem;
+    }
+
+    .stat-box {
+      padding: 6px 7px;
+      border-radius: 10px;
+      background: rgba(15,23,42,0.9);
+      border: 1px solid rgba(148,163,184,0.5);
+    }
+
+    .stat-label {
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin-bottom: 2px;
+    }
+
+    .stat-value {
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+
+    .stat-value.good {
+      color: var(--ok);
+    }
+
+    .stat-value.bad {
+      color: var(--danger);
+    }
+
+    .stat-sub {
+      font-size: 0.68rem;
+      color: var(--muted);
+      margin-top: 1px;
+    }
+
+    .bar-label-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    .bar-container {
+      margin-top: 4px;
+      width: 100%;
+      height: 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.6);
+      background: linear-gradient(90deg, rgba(34,197,94,0.15), rgba(234,179,8,0.16), rgba(248,113,113,0.18));
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #22c55e, #eab308, #fb7185);
+      width: 0%;
+      transition: width 0.3s ease-out;
+    }
+
+    .persona-box {
+      margin-top: 6px;
+      padding: 6px 7px;
+      border-radius: 10px;
+      border: 1px solid rgba(148,163,184,0.5);
+      background: linear-gradient(135deg, rgba(8,47,73,0.8), rgba(15,23,42,0.95));
+      font-size: 0.78rem;
+    }
+
+    .persona-title {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #e0f2fe;
+    }
+
+    .persona-sub {
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .controls-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-top: 4px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.7);
+      background: rgba(15,23,42,0.8);
+      color: var(--text);
+      padding: 6px 12px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background var(--transition), transform var(--transition),
+        box-shadow var(--transition), border-color var(--transition);
+    }
+
+    .btn-primary {
+      background: radial-gradient(circle at top, #0ea5e9, #0369a1);
+      border-color: rgba(56,189,248,0.95);
+      box-shadow: 0 10px 25px rgba(56,189,248,0.45);
+    }
+
+    .btn-primary:hover {
+      background: radial-gradient(circle at top, #38bdf8, #0284c7);
+      transform: translateY(-1px);
+      box-shadow: 0 14px 32px rgba(56,189,248,0.6);
+    }
+
+    .btn-ghost {
+      border-style: dashed;
+      color: var(--muted);
+    }
+
+    .btn-ghost:hover {
+      background: rgba(15,23,42,0.95);
+      border-style: solid;
+      color: var(--text);
+    }
+
+    .hint-text {
+      font-size: 0.68rem;
+      color: var(--muted);
+    }
+
+    .hint-text code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+        "Liberation Mono", "Courier New", monospace;
+      font-size: 0.66rem;
+      background: rgba(15,23,42,0.9);
+      padding: 2px 5px;
+      border-radius: 6px;
+      border: 1px solid rgba(148,163,184,0.4);
+    }
+
+    .pill-small {
+      font-size: 0.68rem;
+      padding: 2px 6px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.4);
+      color: var(--muted);
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(15,23,42,0.98);
+      border-radius: 999px;
+      border: 1px solid rgba(56,189,248,0.85);
+      padding: 6px 16px;
+      font-size: 0.8rem;
+      color: #e0f2fe;
+      box-shadow: 0 16px 36px rgba(0,0,0,0.85);
+      display: none;
+      z-index: 50;
+    }
+  </style>
+</head>
+<body>
+  <div class="game-root">
+    <header>
+      <div class="title-block">
+        <h1>
+          Market Prophet: Seeded Futures
+          <span class="logo-pill">Seeded run</span>
+        </h1>
+        <p>
+          Survive 30 trading days by picking one card per day. Build wealth, manage risk, and unlock your trading persona.
+        </p>
+      </div>
+      <div>
+        <div class="seed-controls">
+          <span>Seed:</span>
+          <input id="seedInput" type="text" placeholder="auto" />
+          <button id="applySeedBtn">apply</button>
+          <button id="randomSeedBtn">random</button>
+        </div>
+        <div style="margin-top:6px;display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end">
+          <span class="badge">Client‑side only</span>
+          <span class="badge">GitHub Pages ready</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="layout-main">
+      <section class="cards-panel">
+        <div class="cards-panel-inner">
+          <div class="top-bar">
+            <div class="left">
+              <div class="pill">
+                <strong id="dayLabel">Day 1</strong>
+                of <span id="totalDaysLabel">30</span>
+              </div>
+              <span id="seedDisplay" class="pill-small"></span>
+            </div>
+            <div class="right">
+              <span class="status-dot"></span>
+              <span id="statusLabel">Pick a card to begin.</span>
+            </div>
+          </div>
+
+          <div class="choices-row" id="choicesRow">
+            <!-- Cards inserted via JS -->
+          </div>
+
+          <div class="log-panel" id="logPanel">
+            <!-- Log lines -->
+          </div>
+        </div>
+      </section>
+
+      <aside class="stats-panel">
+        <div class="stats-grid">
+          <div class="stat-box">
+            <div class="stat-label">Portfolio value</div>
+            <div id="portfolioValue" class="stat-value">$10,000</div>
+            <div class="stat-sub" id="portfolioChangeLabel">–</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Cash</div>
+            <div id="cashValue" class="stat-value">$10,000</div>
+            <div class="stat-sub" id="cashHint">Idle cash, no leverage.</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Max drawdown</div>
+            <div id="ddValue" class="stat-value">$0</div>
+            <div class="stat-sub" id="ddHint">Worst drop vs. peak.</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Best run (local)</div>
+            <div id="bestRunValue" class="stat-value">$0</div>
+            <div class="stat-sub" id="bestRunPersona">No runs yet.</div>
+          </div>
+        </div>
+
+        <div>
+          <div class="bar-label-row">
+            <span>Risk meter</span>
+            <span id="riskLabel">Calm</span>
+          </div>
+          <div class="bar-container">
+            <div id="riskBar" class="bar-fill"></div>
+          </div>
+        </div>
+
+        <div class="persona-box">
+          <div class="persona-title" id="personaTitle">Newcomer</div>
+          <div class="persona-sub" id="personaDesc">
+            Finish a full 30‑day loop to reveal who you really are as a trader.
+          </div>
+        </div>
+
+        <div class="controls-row">
+          <button id="newRunBtn" class="btn btn-primary">
+            <span>New 30‑day run</span>
+          </button>
+          <button id="shareSeedBtn" class="btn btn-ghost">
+            <span>Copy seed</span>
+          </button>
+        </div>
+
+        <p class="hint-text">
+          Tip: Share your seed so others can try the same path:
+          <code>seed-12345</code>.
+        </p>
+      </aside>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    // Simple seeded RNG (mulberry32)
+    function makeRng(seed) {
+      let t = seed >>> 0;
+      return function() {
+        t += 0x6D2B79F5;
+        let r = t;
+        r = Math.imul(r ^ r >>> 15, r | 1);
+        r ^= r + Math.imul(r ^ r >>> 7, r | 61);
+        return ((r ^ r >>> 14) >>> 0) / 4294967296;
+      };
+    }
+
+    function seedFromString(str) {
+      if (!str) return Math.floor(Math.random() * 1e9);
+      let h = 2166136261 >>> 0;
+      for (let i = 0; i < str.length; i++) {
+        h ^= str.charCodeAt(i);
+        h = Math.imul(h, 16777619);
+      }
+      return h >>> 0;
+    }
+
+    const TOTAL_DAYS = 30;
+
+    const baseCards = [
+      {
+        id: "buy-silver",
+        name: "Buy Silver Futures",
+        description: "Leverage a volatile metal; gains can flip quickly.",
+        minReturn: -0.12,
+        maxReturn: 0.22,
+        riskImpact: 12,
+        riskLevel: "high",
+        tag: "Tactical trade",
+        flags: { unlocks: "hedge-silver" }
+      },
+      {
+        id: "hold-cash",
+        name: "Hold Cash",
+        description: "Sit out today and watch from the sidelines.",
+        minReturn: -0.01,
+        maxReturn: 0.01,
+        riskImpact: -4,
+        riskLevel: "low",
+        tag: "Defensive",
+        flags: {}
+      },
+      {
+        id: "index-fund",
+        name: "Index Fund",
+        description: "Broad market ETF with modest volatility.",
+        minReturn: -0.03,
+        maxReturn: 0.08,
+        riskImpact: 3,
+        riskLevel: "med",
+        tag: "Core holding",
+        flags: {}
+      },
+      {
+        id: "high-beta",
+        name: "High‑Beta Tech",
+        description: "Chase momentum in frothy names.",
+        minReturn: -0.15,
+        maxReturn: 0.25,
+        riskImpact: 15,
+        riskLevel: "high",
+        tag: "Momentum",
+        flags: { unlocks: "option-hedge" }
+      },
+      {
+        id: "pay-down-debt",
+        name: "Pay Down Margin",
+        description: "De‑risk by reducing leverage exposure.",
+        minReturn: -0.02,
+        maxReturn: 0.03,
+        riskImpact: -10,
+        riskLevel: "low",
+        tag: "De‑risk",
+        flags: {}
+      },
+      {
+        id: "study-day",
+        name: "Study Options",
+        description: "No trades today; you invest in your playbook.",
+        minReturn: 0,
+        maxReturn: 0.01,
+        riskImpact: -2,
+        riskLevel: "low",
+        tag: "Meta",
+        flags: { unlocks: "option-hedge" }
+      },
+      {
+        id: "rebalance",
+        name: "Rebalance Portfolio",
+        description: "Trim winners, add to laggards, smooth out swings.",
+        minReturn: -0.03,
+        maxReturn: 0.06,
+        riskImpact: -3,
+        riskLevel: "med",
+        tag: "Maintenance",
+        flags: {}
+      }
+    ];
+
+    const unlockedCards = {
+      "hedge-silver": {
+        id: "hedge-silver",
+        name: "Hedge Silver",
+        description: "Offset yesterday’s metal exposure with a hedge.",
+        minReturn: -0.04,
+        maxReturn: 0.07,
+        riskImpact: -8,
+        riskLevel: "med",
+        tag: "Hedge",
+        flags: {}
+      },
+      "option-hedge": {
+        id: "option-hedge",
+        name: "Buy Puts",
+        description: "Buy downside protection on your portfolio.",
+        minReturn: -0.04,
+        maxReturn: 0.05,
+        riskImpact: -12,
+        riskLevel: "med",
+        tag: "Protection",
+        flags: {}
+      }
+    };
+
+    const startingState = () => ({
+      day: 1,
+      seed: seedFromString("default"),
+      rng: makeRng(seedFromString("default")),
+      value: 10000,
+      cash: 10000,
+      peak: 10000,
+      maxDrawdown: 0,
+      riskScore: 20,
+      lastChangePct: 0,
+      lastChangeAbs: 0,
+      log: [],
+      seenFlags: {},
+      finished: false
+    });
+
+    let state = startingState();
+
+    const el = (id) => document.getElementById(id);
+
+    function fmtMoney(v) {
+      const s = v.toFixed(0);
+      return "$" + s.replace(/\\\\B(?=(\\\\d{3})+(?!\\\\d))/g, ",");
+    }
+
+    function pickCardsForDay(day) {
+      const rng = state.rng;
+      let pool = [...baseCards];
+
+      for (const key of Object.keys(state.seenFlags)) {
+        if (state.seenFlags[key] && unlockedCards[key]) {
+          pool.push(unlockedCards[key]);
+        }
+      }
+
+      const chosen = [];
+      const used = new Set();
+      const target = 3;
+      while (chosen.length < target && pool.length > 0) {
+        const idx = Math.floor(rng() * pool.length);
+        const card = pool[idx];
+        if (!used.has(card.id)) {
+          chosen.push(card);
+          used.add(card.id);
+        }
+      }
+      return chosen;
+    }
+
+    function riskLabel(score) {
+      if (score < 25) return "Calm";
+      if (score < 50) return "Warmed up";
+      if (score < 75) return "Stretching";
+      if (score < 90) return "On edge";
+      return "Margin call risk";
+    }
+
+    function personaFromRun(value, maxDrawdown, riskScore) {
+      if (value <= 9000) {
+        return {
+          title: "Rekt Tourist",
+          desc: "You sampled every thrill, but the market collected rent."
+        };
+      }
+      if (value > 9000 && value <= 12000 && maxDrawdown < 1500) {
+        return {
+          title: "Steady Turtle",
+          desc: "You survived the loop by keeping your shell thick and slow."
+        };
+      }
+      if (value > 12000 && maxDrawdown >= 2500) {
+        return {
+          title: "Leveraged Lunatic",
+          desc: "You surfed big swings and somehow washed up ahead."
+        };
+      }
+      if (value > 15000 && riskScore < 40) {
+        return {
+          title: "Quiet Assassin",
+          desc: "Your edges are small but relentless, compounding in silence."
+        };
+      }
+      return {
+        title: "Adaptive Chameleon",
+        desc: "You flexed between aggression and defense as conditions changed."
+      };
+    }
+
+    function logLine({ text, type }) {
+      const logPanel = el("logPanel");
+      const div = document.createElement("div");
+      div.className = "log-entry" + (type ? " log-entry-" + type : "");
+      div.textContent = text;
+      logPanel.appendChild(div);
+      logPanel.scrollTop = logPanel.scrollHeight;
+    }
+
+    function clearLog() {
+      el("logPanel").innerHTML = "";
+    }
+
+    function updateStats() {
+      el("dayLabel").textContent = "Day " + state.day;
+      el("totalDaysLabel").textContent = TOTAL_DAYS.toString();
+      el("portfolioValue").textContent = fmtMoney(state.value);
+      el("cashValue").textContent = fmtMoney(state.cash);
+
+      const changePct = state.lastChangePct * 100;
+      const changeAbs = state.lastChangeAbs;
+      const label = changeAbs === 0
+        ? "No change yet."
+        : \`\${changeAbs >= 0 ? "+" : ""}\${fmtMoney(changeAbs).replace("$","")}\` +
+          \` (\${changePct >= 0 ? "+" : ""}\${changePct.toFixed(1)}%)\`;
+
+      const valueEl = el("portfolioValue");
+      valueEl.classList.remove("good", "bad");
+      if (changeAbs > 0) valueEl.classList.add("good");
+      if (changeAbs < 0) valueEl.classList.add("bad");
+
+      el("portfolioChangeLabel").textContent = label;
+
+      el("ddValue").textContent = fmtMoney(state.maxDrawdown);
+      el("riskBar").style.width = Math.max(0, Math.min(100, state.riskScore)) + "%";
+      el("riskLabel").textContent = riskLabel(state.riskScore);
+
+      const best = loadBestRun();
+      if (best) {
+        el("bestRunValue").textContent = fmtMoney(best.value);
+        el("bestRunPersona").textContent = best.personaTitle + " (" + best.seed + ")";
+      } else {
+        el("bestRunValue").textContent = "$0";
+        el("bestRunPersona").textContent = "No runs yet.";
+      }
+    }
+
+    function renderCards() {
+      const row = el("choicesRow");
+      row.innerHTML = "";
+
+      if (state.finished) {
+        const div = document.createElement("div");
+        div.style.gridColumn = "1 / -1";
+        div.style.fontSize = "0.85rem";
+        div.style.color = "#9ca3af";
+        div.textContent = "Run finished. Start a new 30‑day loop to trade again.";
+        row.appendChild(div);
+        return;
+      }
+
+      const cards = pickCardsForDay(state.day);
+      cards.forEach((card) => {
+        const c = document.createElement("article");
+        c.className = "card";
+        c.dataset.cardId = card.id;
+
+        const header = document.createElement("div");
+        header.className = "card-header";
+
+        const title = document.createElement("div");
+        title.className = "card-title";
+        title.textContent = card.name;
+
+        const tag = document.createElement("div");
+        tag.className = "card-tag";
+        tag.textContent = card.tag;
+
+        header.appendChild(title);
+        header.appendChild(tag);
+
+        const body = document.createElement("div");
+        body.className = "card-body";
+        body.textContent = card.description;
+
+        const metrics = document.createElement("div");
+        metrics.className = "card-metrics";
+
+        const range = document.createElement("div");
+        range.className = "return-range";
+        const minPct = (card.minReturn * 100).toFixed(0);
+        const maxPct = (card.maxReturn * 100).toFixed(0);
+        range.innerHTML = \`<span>\${minPct}%</span> to <span>\${maxPct}%</span>\`;
+
+        const risk = document.createElement("div");
+        risk.className = "risk-pill risk-" + card.riskLevel;
+        risk.textContent =
+          card.riskLevel === "low"
+            ? "Low risk"
+            : card.riskLevel === "med"
+            ? "Medium risk"
+            : "High risk";
+
+        metrics.appendChild(range);
+        metrics.appendChild(risk);
+
+        c.appendChild(header);
+        c.appendChild(body);
+        c.appendChild(metrics);
+
+        c.addEventListener("click", () => onCardChosen(card));
+
+        row.appendChild(c);
+      });
+    }
+
+    function onCardChosen(card) {
+      if (state.finished) return;
+
+      const prevValue = state.value;
+
+      const r = state.rng();
+      const ret = card.minReturn + (card.maxReturn - card.minReturn) * r;
+      const change = state.value * ret;
+      state.value += change;
+      state.cash = state.value;
+
+      const pct = ret;
+      state.lastChangePct = pct;
+      state.lastChangeAbs = change;
+
+      if (state.value > state.peak) {
+        state.peak = state.value;
+      }
+      const dd = state.peak - state.value;
+      if (dd > state.maxDrawdown) {
+        state.maxDrawdown = dd;
+      }
+
+      state.riskScore = Math.max(
+        0,
+        Math.min(100, state.riskScore + card.riskImpact)
+      );
+
+      if (card.flags && card.flags.unlocks) {
+        state.seenFlags[card.flags.unlocks] = true;
+      }
+
+      const type = change >= 0 ? "positive" : "negative";
+      const changeTxt =
+        (change >= 0 ? "+" : "") +
+        fmtMoney(change).replace("$", "") +
+        " (" +
+        ((pct * 100 >= 0 ? "+" : "") + (pct * 100).toFixed(1)) +
+        "%)";
+      const line =
+        "Day " +
+        state.day +
+        ": " +
+        card.name +
+        " → " +
+        changeTxt +
+        ".";
+      state.log.push(line);
+      logLine({ text: line, type });
+
+      state.day += 1;
+
+      if (state.day > TOTAL_DAYS) {
+        endRun();
+      } else {
+        updateStats();
+        renderCards();
+        el("statusLabel").textContent = "Day " + (state.day - 1) + " locked in.";
+      }
+    }
+
+    function endRun() {
+      state.finished = true;
+      updateStats();
+      renderCards();
+
+      const persona = personaFromRun(
+        state.value,
+        state.maxDrawdown,
+        state.riskScore
+      );
+
+      el("personaTitle").textContent = persona.title;
+      el("personaDesc").textContent = persona.desc;
+
+      const summary =
+        "Loop complete: final " +
+        fmtMoney(state.value) +
+        ", max drawdown " +
+        fmtMoney(state.maxDrawdown) +
+        ". Persona: " +
+        persona.title +
+        ".";
+      logLine({ text: summary, type: state.value >= 10000 ? "positive" : "negative" });
+
+      maybeSaveBestRun(persona);
+
+      el("statusLabel").textContent =
+        "30‑day loop finished. Start a new run to try a different path.";
+    }
+
+    function loadBestRun() {
+      try {
+        const raw = localStorage.getItem("marketProphetBest");
+        if (!raw) return null;
+        return JSON.parse(raw);
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function maybeSaveBestRun(persona) {
+      const best = loadBestRun();
+      const current = {
+        value: state.value,
+        seed: state.seedString,
+        personaTitle: persona.title
+      };
+      if (!best || current.value > best.value) {
+        localStorage.setItem(
+          "marketProphetBest",
+          JSON.stringify(current)
+        );
+        showToast("New best run saved locally.");
+      }
+    }
+
+    function showToast(message) {
+      const toast = el("toast");
+      toast.textContent = message;
+      toast.style.display = "block";
+      clearTimeout(showToast._t);
+      showToast._t = setTimeout(() => {
+        toast.style.display = "none";
+      }, 2200);
+    }
+
+    function startRunWithSeed(seedString) {
+      const seedNumeric = seedFromString(seedString);
+      state = startingState();
+      state.seed = seedNumeric;
+      state.seedString = seedString || ("seed-" + seedNumeric);
+      state.rng = makeRng(seedNumeric);
+      clearLog();
+      logLine({
+        text:
+          "New run started with seed \\\\"" +
+          state.seedString +
+          "\\\\". You have 30 days.",
+        type: null
+      });
+      el("statusLabel").textContent = "Pick your first card.";
+      el("seedDisplay").textContent = state.seedString;
+      updateStats();
+      renderCards();
+    }
+
+    function randomSeedString() {
+      return "seed-" + Math.floor(Math.random() * 1e9);
+    }
+
+    function init() {
+      el("totalDaysLabel").textContent = TOTAL_DAYS.toString();
+
+      const best = loadBestRun();
+      if (best) {
+        el("bestRunValue").textContent = fmtMoney(best.value);
+        el("bestRunPersona").textContent =
+          best.personaTitle + " (" + best.seed + ")";
+      }
+
+      const defaultSeed = randomSeedString();
+      startRunWithSeed(defaultSeed);
+      el("seedInput").value = defaultSeed;
+      el("seedDisplay").textContent = defaultSeed;
+
+      el("newRunBtn").addEventListener("click", () => {
+        const inputSeed = el("seedInput").value.trim();
+        const seedStr = inputSeed || randomSeedString();
+        el("seedInput").value = seedStr;
+        startRunWithSeed(seedStr);
+      });
+
+      el("applySeedBtn").addEventListener("click", () => {
+        const seedStr = el("seedInput").value.trim() || randomSeedString();
+        el("seedInput").value = seedStr;
+        startRunWithSeed(seedStr);
+      });
+
+      el("randomSeedBtn").addEventListener("click", () => {
+        const seedStr = randomSeedString();
+        el("seedInput").value = seedStr;
+        startRunWithSeed(seedStr);
+      });
+
+      el("shareSeedBtn").addEventListener("click", async () => {
+        const seedStr = state.seedString || "seed-" + state.seed;
+        try {
+          await navigator.clipboard.writeText(seedStr);
+          showToast("Seed copied: " + seedStr);
+        } catch {
+          showToast("Seed: " + seedStr);
+        }
+      });
+
+      updateStats();
+    }
+
+    document.addEventListener("DOMContentLoaded", init);
+  </script>
+</body>
+</html>`,
+      game2: `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Last Watch: The Silent System</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<style>
+    body {
+        margin: 0;
+        background: #0b0f14;
+        color: #d6dce5;
+        font-family: monospace;
+    }
+
+    .container {
+        display: grid;
+        grid-template-rows: 60px 1fr 180px;
+        height: 100vh;
+    }
+
+    header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 16px;
+        border-bottom: 1px solid #1f2937;
+        background: #020617;
+    }
+
+    .status span {
+        margin-right: 16px;
+    }
+
+    .terminal {
+        padding: 16px;
+        overflow-y: auto;
+        background: #020617;
+        font-size: 14px;
+        line-height: 1.4;
+    }
+
+    .alert-panel {
+        border-top: 1px solid #1f2937;
+        padding: 16px;
+        background: #020617;
+    }
+
+    .alert {
+        margin-bottom: 12px;
+    }
+
+    .alert strong {
+        color: #f87171;
+    }
+
+    button {
+        margin-right: 8px;
+        margin-top: 6px;
+        background: #1f2937;
+        color: #d6dce5;
+        border: 1px solid #374151;
+        padding: 6px 10px;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background: #374151;
+    }
+
+    .ending {
+        color: #a7f3d0;
+        font-size: 16px;
+    }
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<header>
+    <div class="status">
+        <span>⏱ Time: <span id="time">0</span></span>
+        <span>⚡ Power: <span id="power">100</span></span>
+        <span>❄ Cooling: <span id="cooling">100</span></span>
+        <span>🧠 Core: <span id="core">100</span></span>
+    </div>
+    <div>LAST WATCH</div>
+</header>
+
+<div class="terminal" id="terminal"></div>
+
+<div class="alert-panel" id="alerts">
+    <div class="alert">System stable. Awaiting events…</div>
+</div>
+
+</div>
+
+<script>
+/* ------------------ GAME STATE ------------------ */
+let time = 0;
+let tickInterval = null;
+
+let systems = {
+    power: 100,
+    cooling: 100,
+    core: 100
+};
+
+let hiddenStress = {
+    power: 0,
+    cooling: 0,
+    core: 0
+};
+
+const terminal = document.getElementById("terminal");
+const alertsDiv = document.getElementById("alerts");
+
+/* ------------------ LOGGING ------------------ */
+function log(message) {
+    const p = document.createElement("div");
+    p.textContent = \`[\${time}s] \${message}\`;
+    terminal.appendChild(p);
+    terminal.scrollTop = terminal.scrollHeight;
+}
+
+/* ------------------ UI UPDATE ------------------ */
+function updateUI() {
+    document.getElementById("time").textContent = time;
+    document.getElementById("power").textContent = Math.max(0, systems.power);
+    document.getElementById("cooling").textContent = Math.max(0, systems.cooling);
+    document.getElementById("core").textContent = Math.max(0, systems.core);
+}
+
+/* ------------------ EVENTS ------------------ */
+const events = [
+    { t: 10, type: "cooling" },
+    { t: 25, type: "power" },
+    { t: 40, type: "core" },
+    { t: 60, type: "cooling" },
+    { t: 80, type: "power" }
+];
+
+function triggerEvent(event) {
+    alertsDiv.innerHTML = "";
+
+    const alert = document.createElement("div");
+    alert.className = "alert";
+    alert.innerHTML = \`<strong>ALERT:</strong> \${event.type.toUpperCase()} anomaly detected.\`;
+
+    const btn1 = document.createElement("button");
+    btn1.textContent = "Quick Fix";
+    btn1.onclick = () => resolveEvent(event.type, "quick");
+
+    const btn2 = document.createElement("button");
+    btn2.textContent = "Run Diagnostics";
+    btn2.onclick = () => resolveEvent(event.type, "diagnose");
+
+    const btn3 = document.createElement("button");
+    btn3.textContent = "Ignore";
+    btn3.onclick = () => resolveEvent(event.type, "ignore");
+
+    alert.append(btn1, btn2, btn3);
+    alertsDiv.appendChild(alert);
+
+    log(\`Anomaly detected in \${event.type} subsystem.\`);
+}
+
+function resolveEvent(system, choice) {
+    alertsDiv.innerHTML = "<div class='alert'>Action registered.</div>";
+
+    if (choice === "quick") {
+        systems[system] += 10;
+        hiddenStress[system] += 10;
+        log(\`Quick fix applied to \${system}.\`);
+    }
+
+    if (choice === "diagnose") {
+        systems[system] += 5;
+        hiddenStress[system] -= 5;
+        log(\`Diagnostics reduced uncertainty in \${system}.\`);
+    }
+
+    if (choice === "ignore") {
+        hiddenStress[system] += 5;
+        log(\`No action taken on \${system}.\`);
+    }
+
+    updateUI();
+}
+
+/* ------------------ SYSTEM DECAY ------------------ */
+function decaySystems() {
+    systems.power -= 0.5 + hiddenStress.power * 0.02;
+    systems.cooling -= 0.4 + hiddenStress.cooling * 0.02;
+    systems.core -= (systems.cooling < 40 ? 1.2 : 0.3) + hiddenStress.core * 0.02;
+}
+
+/* ------------------ ENDING ------------------ */
+function checkEnding() {
+    if (systems.core <= 0) {
+        endGame("CORE FAILURE. SYSTEM LOST.");
+    }
+    if (time >= 120) {
+        endGame("SHIFT COMPLETE. SYSTEM SURVIVED.");
+    }
+}
+
+function endGame(message) {
+    clearInterval(tickInterval);
+    alertsDiv.innerHTML = \`<div class="ending">\${message}<br><br>
+    Final Report:<br>
+    Power Integrity: \${Math.round(systems.power)}<br>
+    Cooling Integrity: \${Math.round(systems.cooling)}<br>
+    Core Integrity: \${Math.round(systems.core)}<br><br>
+    Some failures were avoided. Others were merely delayed.
+    </div>\`;
+    log("Session terminated.");
+}
+
+/* ------------------ GAME LOOP ------------------ */
+function gameTick() {
+    time++;
+    decaySystems();
+    updateUI();
+
+    events.forEach(e => {
+        if (e.t === time) triggerEvent(e);
+    });
+
+    if (Math.random() < 0.1) {
+        log("Sensor data delayed…");
+    }
+
+    checkEnding();
+}
+
+log("Duty initialized. You are the last watch.");
+tickInterval = setInterval(gameTick, 1000);
+</script>
+
+</body>
+</html>`,
+      game3: `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS Exorcist: DOMination</title>
+    <style>
+        :root {
+            --terminal-bg: #1a1a2e;
+            --terminal-text: #00ff9d;
+            --browser-bg: #f0f0f0;
+            --highlight: #ff00ff;
+        }
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Courier New', Courier, monospace;
+            background: #000;
+            overflow: hidden;
+        }
+
+        /* --- Main Layout --- */
+        #game-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        /* --- Top Half: The Simulated Browser "Haunted Site" --- */
+        #browser-frame {
+            flex: 3;
+            background: var(--browser-bg);
+            position: relative;
+            overflow: hidden;
+            border-bottom: 4px solid var(--terminal-bg);
+        }
+        
+        /* The actual area where level HTML is injected */
+        #browser-content {
+            padding: 20px;
+            height: 100%;
+            box-sizing: border-box;
+            position: relative;
+            /* Important: makes sure injected absolute elements stay within frame */
+        }
+
+        /* Style for the "Inspector" highlight outline */
+        .inspecting-highlight {
+            outline: 3px dotted var(--highlight) !important;
+            cursor: crosshair !important;
+        }
+
+
+        /* --- Bottom Half: The Terminal (Player Input) --- */
+        #terminal-frame {
+            flex: 2;
+            background: var(--terminal-bg);
+            color: var(--terminal-text);
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: inset 0 10px 20px rgba(0,0,0,0.5);
+        }
+
+        #level-info {
+            border-bottom: 1px solid #333;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            color: #fff;
+        }
+
+        #level-title { font-size: 1.2em; font-weight: bold; color: var(--highlight); }
+
+        #terminal-log {
+            flex-grow: 1;
+            overflow-y: auto;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+        
+        #inspector-status-bar {
+            background: #000;
+            padding: 4px;
+            margin-bottom: 5px;
+            font-size: 0.8em;
+            color: var(--highlight);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .input-line {
+            display: flex;
+            align-items: center;
+            background: #000;
+            padding: 5px;
+        }
+
+        .prompt-char { color: var(--highlight); margin-right: 10px; }
+
+        #css-input {
+            flex-grow: 1;
+            background: transparent;
+            border: none;
+            color: var(--terminal-text);
+            font-family: inherit;
+            font-size: 1.1em;
+            outline: none;
+        }
+
+        /* Utility for messages */
+        .sys-msg { color: #ffff00; }
+        .error-msg { color: #ff3333; }
+        .success-msg { color: #00ff9d; font-weight: bold; }
+
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <div id="browser-frame">
+            <div id="browser-content">
+                </div>
+        </div>
+
+        <div id="terminal-frame">
+            <div id="level-info">
+                <span id="level-title">Level 1</span>: <span id="level-instruction">Instructions loading...</span>
+            </div>
+            
+            <div id="terminal-log">
+                <div>> Initializing Exorcism Protocol v1.0...</div>
+                <div>> Connecting to haunted DOM... Success.</div>
+                <div>> Hover over webpage elements to scan their signature.</div>
+            </div>
+
+            <div id="inspector-status-bar">SCANNER IDLE. Hover over elements above.</div>
+
+            <div class="input-line">
+                <span class="prompt-char">>></span>
+                <input type="text" id="css-input" placeholder="Type CSS spell here (e.g., #ghost { display: none; })" autocomplete="off">
+            </div>
+        </div>
+    </div>
+
+
+<script>
+    /* ================= MAIN GAME LOGIC ================= */
+
+    // --- DOM REFERENCES ---
+    const browserContent = document.getElementById('browser-content');
+    const terminalLog = document.getElementById('terminal-log');
+    const cssInput = document.getElementById('css-input');
+    const inspectorStatus = document.getElementById('inspector-status-bar');
+    const levelTitle = document.getElementById('level-title');
+    const levelInstruction = document.getElementById('level-instruction');
+
+    let currentLevelIndex = 0;
+    let previouslyHoveredElement = null;
+
+    // --- UTILITY FUNCTIONS ---
+    function logToTerminal(msg, type = '') {
+        const div = document.createElement('div');
+        div.className = type;
+        div.innerText = \`> \${msg}\`;
+        terminalLog.appendChild(div);
+        terminalLog.scrollTop = terminalLog.scrollHeight;
+    }
+
+    /* ================= THE LEVELS DATA ================= */
+    // This array holds the data for every level in the game.
+    const LEVELS = [
+        // LEVEL 1: THE INVISIBLE WALL
+        {
+            title: "The Invisible Force",
+            instruction: "You need to click the 'Proceed' button, but an invisible entity is intercepting your clicks. Scan the area, find its ID, and banish it.",
+            // The HTML that gets injected into the top frame
+            html: \`
+                <div style="text-align: center; margin-top: 50px;">
+                    <h1>Secure Terminal Access</h1>
+                    <p>Please verify identity to continue.</p>
+                    <button id="proceed-btn" style="padding: 10px 20px; font-size: 1.2em; cursor: pointer;">[ PROCEED ]</button>
+                    
+                    <div id="poltergeist-overlay" style="position: absolute; top:0; left:0; width: 100%; height: 100%; z-index: 999; background: rgba(255,0,0,0.05);"></div>
+                </div>
+            \`,
+            // Runs when the level loads
+            onLoad: () => {
+                document.getElementById('proceed-btn').addEventListener('click', () => {
+                   alert("ACCESS GRANTED. You clicked the button!");
+                   winLevel();
+                });
+            },
+            // Optional: Runs every time a spell is cast to check for a win state NOT based on clicking
+            checkWinState: null 
+        },
+
+        // LEVEL 2: THE MIMICS
+        {
+            title: "Deceptive Containers",
+            instruction: "Two of these chests are mimics (traps). Only one is real. Use your scanner to find the difference in their HTML attributes, then write CSS to visually highlight the traps (e.g., turn them red) so you know which one is safe to click.",
+            html: \`
+                <div style="display: flex; justify-content: center; gap: 20px; margin-top: 50px;">
+                    <div class="chest" data-type="mimic" style="width: 100px; height: 100px; background: saddlebrown; border: 4px solid #5a3a22; display: flex; justify-content: center; align-items: center; color: white; cursor: pointer;">Chest A</div>
+                    <div class="chest" data-type="real"  style="width: 100px; height: 100px; background: saddlebrown; border: 4px solid #5a3a22; display: flex; justify-content: center; align-items: center; color: white; cursor: pointer;">Chest B</div>
+                    <div class="chest" data-type="mimic" style="width: 100px; height: 100px; background: saddlebrown; border: 4px solid #5a3a22; display: flex; justify-content: center; align-items: center; color: white; cursor: pointer;">Chest C</div>
+                </div>
+            \`,
+            onLoad: () => {
+                // Add click handlers for the puzzles
+                document.querySelectorAll('.chest').forEach(chest => {
+                    chest.addEventListener('click', (e) => {
+                        if(e.target.getAttribute('data-type') === 'mimic') {
+                            alert("CHOMP! It was a mimic. Try again.");
+                            loadLevel(currentLevelIndex); // Reload level
+                        } else {
+                            alert("You found the treasure!");
+                            winLevel();
+                        }
+                    });
+                });
+            },
+           checkWinState: null
+        },
+         // END GAME SCREEN
+         {
+            title: "Simulation Complete",
+            instruction: "You are a master DOM exorcist.",
+            html: \`
+                <div style="text-align: center; margin-top: 100px; color: green;">
+                    <h1>ALL ENTITIES NEUTRALIZED.</h1>
+                    <p>Thank you for playing this prototype.</p>
+                </div>
+            \`,
+            onLoad: null,
+            checkWinState: null
+        }
+    ];
+
+
+    /* ================= ENGINE MECHANICS ================= */
+
+    // --- 1. Level Loading ---
+    function loadLevel(index) {
+        if(index >= LEVELS.length) {
+            index = LEVELS.length - 1; // Stay on end screen
+        }
+        currentLevelIndex = index;
+        const levelData = LEVELS[currentLevelIndex];
+
+        // Update UI
+        levelTitle.innerText = \`\${levelData.title} (\${index + 1}/\${LEVELS.length})\`;
+        levelInstruction.innerText = levelData.instruction;
+        logToTerminal(\`--- Loading Level \${index + 1}: \${levelData.title} ---\`, 'sys-msg');
+
+        // Inject HTML
+        browserContent.innerHTML = levelData.html;
+
+        // Run level specific setup scripts
+        if(levelData.onLoad) {
+            levelData.onLoad();
+        }
+
+        // Clear input
+        cssInput.value = '';
+        cssInput.focus();
+    }
+
+
+    // --- 2. The "Inspector" (Scanner) ---
+    // Handles hovering over elements in the "browser window"
+    browserContent.addEventListener('mouseover', (e) => {
+        // Don't highlight the container itself
+        if (e.target === browserContent) return;
+
+        // Remove highlight from previous
+        if(previouslyHoveredElement) {
+            previouslyHoveredElement.classList.remove('inspecting-highlight');
+        }
+
+        const target = e.target;
+        target.classList.add('inspecting-highlight');
+        previouslyHoveredElement = target;
+
+        // Build the status string
+        let tagName = target.tagName.toLowerCase();
+        let idStr = target.id ? \`#\${target.id}\` : '';
+        let classStr = target.className.replace('inspecting-highlight','').trim();
+        classStr = classStr ? \`.\${classStr.replace(/\\\\s+/g, '.')}\` : '';
+
+        // Check for important attributes (for Level 2)
+        let attrStr = '';
+        if(target.hasAttribute('data-type')) {
+            attrStr = \`[data-type="\${target.getAttribute('data-type')}"]\`;
+        }
+
+        inspectorStatus.innerText = \`Scanning: <\${tagName}\${idStr}\${classStr}\${attrStr}>\`;
+    });
+
+    // Handle mouse leaving the browser window area
+    browserContent.addEventListener('mouseout', (e) => {
+         if(previouslyHoveredElement) {
+            previouslyHoveredElement.classList.remove('inspecting-highlight');
+            previouslyHoveredElement = null;
+        }
+        inspectorStatus.innerText = "SCANNER IDLE.";
+    });
+
+
+    // --- 3. Casting Spells (CSS Injection) ---
+    cssInput.addEventListener('keydown', (e) => {
+        if(e.key === 'Enter') {
+            const spell = cssInput.value.trim();
+            if(spell === '') return;
+
+            try {
+                // Create a style tag
+                const styleTag = document.createElement('style');
+                // IMPORTANT: We inject the style *inside* the browserContent div. 
+                // This ensures the CSS only affects the game level, not the terminal UI.
+                styleTag.textContent = spell;
+                browserContent.appendChild(styleTag);
+                
+                logToTerminal(\`Spell cast: \${spell}\`);
+                cssInput.value = '';
+
+                // Check win condition (if the level relies on CSS state rather than a click)
+                if(LEVELS[currentLevelIndex].checkWinState) {
+                    if(LEVELS[currentLevelIndex].checkWinState()) {
+                        winLevel();
+                    }
+                }
+
+            } catch (err) {
+                logToTerminal(\`Spell failed: \${err.message}\`, 'error-msg');
+            }
+        }
+    });
+
+    // --- 4. Win State Handling ---
+    function winLevel() {
+        logToTerminal(\`SUCCESS. Entity neutralized.\`, 'success-msg');
+        setTimeout(() => {
+            loadLevel(currentLevelIndex + 1);
+        }, 1500);
+    }
+
+    // ================= START GAME =================
+    // Start the first level once the page is ready
+    window.onload = () => {
+        loadLevel(0);
+    };
+
+</script>
+</body>
+</html>`
+    };
+
+    // Navigation functions
+    function showLanding() {
+      document.querySelectorAll('.page').forEach(page => {
+        page.classList.remove('active');
+      });
+      document.getElementById('landing-page').classList.add('active');
+      document.getElementById('backButton').classList.remove('visible');
+      document.body.style.overflow = 'auto';
+    }
+
+    function loadGame(gameId) {
+      // Hide landing page
+      document.getElementById('landing-page').classList.remove('active');
+
+      // Get game container
+      const gameContainer = document.getElementById(gameId);
+
+      // Load game HTML if not already loaded
+      if (gameContainer.innerHTML === '') {
+        gameContainer.innerHTML = GAMES[gameId];
+
+        // Execute scripts in the loaded game
+        const scripts = gameContainer.querySelectorAll('script');
+        scripts.forEach(script => {
+          const newScript = document.createElement('script');
+          if (script.src) {
+            newScript.src = script.src;
+          } else {
+            newScript.textContent = script.textContent;
+          }
+          script.parentNode.replaceChild(newScript, script);
+        });
+      }
+
+      // Show game page
+      gameContainer.classList.add('active');
+
+      // Show back button
+      document.getElementById('backButton').classList.add('visible');
+      document.body.style.overflow = 'hidden';
+    }
+
+    // Back button click handler
+    document.getElementById('backButton').addEventListener('click', showLanding);
+
+    // Prevent default scroll behavior when games are active
+    window.addEventListener('load', function() {
+      console.log('Neural Arcade loaded successfully!');
+    });
+  </script>
+</body>
+</html>
