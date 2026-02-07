@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Neural Arcade - Browser Game Hub</title>
+  <style>
+    /* ==================== ROOT & RESET ==================== */
+    :root {
+      --primary-bg: #0a0e1a;
+      --secondary-bg: #0f1419;
+      --card-bg: #151b26;
+      --accent-cyan: #00d9ff;
+      --accent-magenta: #ff00aa;
+      --accent-purple: #8b5cf6;
+      --text-primary: #e5e7eb;
+      --text-muted: #9ca3af;
+      --glow-cyan: rgba(0, 217, 255, 0.4);
+      --glow-magenta: rgba(255, 0, 170, 0.4);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, var(--primary-bg) 0%, #1a0b2e 100%);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ==================== PAGE SYSTEM ==================== */
+    .page {
+      display: none;
+      min-height: 100vh;
+      animation: fadeIn 0.4s ease-in;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ==================== LANDING PAGE ==================== */
+    #landing-page {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Animated Background Grid */
+    .bg-grid {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        linear-gradient(rgba(0, 217, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 217, 255, 0.03) 1px, transparent 1px);
+      background-size: 50px 50px;
+      pointer-events: none;
+      animation: gridScroll 20s linear infinite;
+      z-index: 0;
+    }
+
+    @keyframes gridScroll {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(50px, 50px); }
+    }
+
+    /* Floating Particles */
+    .particle {
+      position: fixed;
+      width: 4px;
+      height: 4px;
+      background: var(--accent-cyan);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
+      animation: float 15s infinite ease-in-out;
+      opacity: 0.3;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(100px, -100px) scale(1.5); }
+    }
+
+    .landing-content {
+      position: relative;
+      z-index: 1;
+      max-width: 1200px;
+      width: 100%;
+    }
+
+    /* Hero Section */
+    .hero {
+      text-align: center;
+      margin-bottom: 60px;
+      padding: 40px 20px;
+    }
+
+    .hero h1 {
+      font-size: 4rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-magenta), var(--accent-purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 20px;
+      text-shadow: 0 0 40px var(--glow-cyan);
+      animation: glowPulse 3s ease-in-out infinite;
+    }
+
+    @keyframes glowPulse {
+      0%, 100% { filter: brightness(1); }
+      50% { filter: brightness(1.2); }
+    }
+
+    .hero p {
+      font-size: 1.2rem;
+      color: var(--text-muted);
+      max-width: 600px;
+      margin: 0 auto 30px;
+      line-height: 1.6;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 20px;
+      background: rgba(0, 217, 255, 0.1);
+      border: 1px solid var(--accent-cyan);
+      border-radius: 999px;
+      font-size: 0.9rem;
+      color: var(--accent-cyan);
+      margin-top: 10px;
+    }
+
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--accent-cyan);
+      border-radius: 50%;
+      animation: pulse 2s ease-in-out infinite;
+      box-shadow: 0 0 10px var(--glow-cyan);
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.3); opacity: 0.7; }
+    }
+
+    /* Game Cards Grid */
+    .games-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 30px;
+      margin-bottom: 60px;
+    }
+
+    .game-card {
+      background: var(--card-bg);
+      border-radius: 20px;
+      padding: 30px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .game-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, transparent, rgba(0, 217, 255, 0.1));
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+    }
+
+    .game-card:hover {
+      transform: translateY(-8px);
+      border-color: var(--accent-cyan);
+      box-shadow: 0 20px 60px rgba(0, 217, 255, 0.3);
+    }
+
+    .game-card:hover::before {
+      opacity: 1;
+    }
+
+    .game-card-icon {
+      font-size: 3rem;
+      margin-bottom: 20px;
+      display: block;
+    }
+
+    .game-card h2 {
+      font-size: 1.8rem;
+      margin-bottom: 15px;
+      color: var(--text-primary);
+    }
+
+    .game-card p {
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 20px;
+      font-size: 0.95rem;
+    }
+
+    .game-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .tag {
+      padding: 4px 12px;
+      background: rgba(139, 92, 246, 0.2);
+      border: 1px solid var(--accent-purple);
+      border-radius: 999px;
+      font-size: 0.75rem;
+      color: var(--accent-purple);
+    }
+
+    .play-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 24px;
+      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+      border: none;
+      border-radius: 999px;
+      color: white;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 20px var(--glow-cyan);
+    }
+
+    .play-button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 30px var(--glow-cyan);
+    }
+
+    /* Stats Bar */
+    .stats-bar {
+      background: var(--card-bg);
+      border-radius: 15px;
+      padding: 30px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 30px;
+      text-align: center;
+    }
+
+    .stat-item h3 {
+      font-size: 2.5rem;
+      color: var(--accent-cyan);
+      margin-bottom: 8px;
+    }
+
+    .stat-item p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    /* Footer */
+    .landing-footer {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      margin-top: 60px;
+    }
+
+    /* Back Button */
+    .back-button {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      padding: 12px 24px;
+      background: rgba(0, 217, 255, 0.1);
+      border: 1px solid var(--accent-cyan);
+      border-radius: 999px;
+      color: var(--accent-cyan);
+      cursor: pointer;
+      font-weight: 600;
+      z-index: 1000;
+      transition: all 0.3s ease;
+      display: none;
+    }
+
+    .back-button.visible {
+      display: block;
+    }
+
+    .back-button:hover {
+      background: var(--accent-cyan);
+      color: var(--primary-bg);
+      transform: translateX(-4px);
+    }
+
+    /* Game Container */
+    .game-container {
+      width: 100%;
+      height: 100vh;
+      overflow: auto;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .hero h1 {
+        font-size: 2.5rem;
+      }
+
+      .hero p {
+        font-size: 1rem;
+      }
+
+      .games-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .stats-bar {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Background Elements -->
+  <div class="bg-grid"></div>
+
+  <!-- Back Button -->
+  <button class="back-button" id="backButton" onclick="showLanding()">
+    ← Back to Hub
+  </button>
+
+  <!-- ==================== LANDING PAGE ==================== -->
+  <div id="landing-page" class="page active">
+    <div class="landing-content">
+      <!-- Hero Section -->
+      <div class="hero">
+        <h1>⚡ Neural Arcade</h1>
+        <p>
+          Experience three unique browser-based games. No downloads, no servers, 
+          no database—pure client-side gaming powered by modern web technology.
+        </p>
+        <div class="hero-badge">
+          <span class="pulse-dot"></span>
+          <span>100% Client-Side • Offline Ready • Open Source</span>
+        </div>
+      </div>
+
+      <!-- Games Grid -->
+      <div class="games-grid">
+        <!-- Game 1: Market Prophet -->
+        <div class="game-card" onclick="loadGame('game1')">
+          <span class="game-card-icon">📈</span>
+          <h2>Market Prophet: Seeded Futures</h2>
+          <p>
+            Navigate 30 days of volatile trading decisions. Build wealth, manage risk, 
+            and discover your trading persona through branching card-based choices. 
+            Every seed creates a unique but repeatable market journey.
+          </p>
+          <div class="game-tags">
+            <span class="tag">Strategy</span>
+            <span class="tag">Finance</span>
+            <span class="tag">Seeded RNG</span>
+          </div>
+          <button class="play-button" onclick="event.stopPropagation(); loadGame('game1')">
+            <span>Launch Game</span>
+            <span>→</span>
+          </button>
+        </div>
+
+        <!-- Game 2: Last Watch -->
+        <div class="game-card" onclick="loadGame('game2')">
+          <span class="game-card-icon">⚠️</span>
+          <h2>Last Watch: Silent System</h2>
+          <p>
+            You're the final operator monitoring a failing space station. Manage 
+            power, cooling, and core systems for 120 seconds. Quick fixes hide 
+            dangerous stress—will you survive your shift?
+          </p>
+          <div class="game-tags">
+            <span class="tag">Survival</span>
+            <span class="tag">Real-time</span>
+            <span class="tag">Hidden Mechanics</span>
+          </div>
+          <button class="play-button" onclick="event.stopPropagation(); loadGame('game2')">
+            <span>Launch Game</span>
+            <span>→</span>
+          </button>
+        </div>
+
+        <!-- Game 3: CSS Exorcist -->
+        <div class="game-card" onclick="loadGame('game3')">
+          <span class="game-card-icon">👻</span>
+          <h2>CSS Exorcist: DOMination</h2>
+          <p>
+            Battle possessed DOM elements using CSS selector spells. Master 
+            class selectors, ID targeting, and pseudo-classes to cleanse 
+            corrupted web pages. Learn CSS while gaming.
+          </p>
+          <div class="game-tags">
+            <span class="tag">Educational</span>
+            <span class="tag">Puzzle</span>
+            <span class="tag">CSS Learning</span>
+          </div>
+          <button class="play-button" onclick="event.stopPropagation(); loadGame('game3')">
+            <span>Launch Game</span>
+            <span>→</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Stats Bar -->
+      <div class="stats-bar">
+        <div class="stat-item">
+          <h3>3</h3>
+          <p>Unique Games</p>
+        </div>
+        <div class="stat-item">
+          <h3>0 KB</h3>
+          <p>Server Required</p>
+        </div>
+        <div class="stat-item">
+          <h3>∞</h3>
+          <p>Replayability</p>
+        </div>
+        <div class="stat-item">
+          <h3>100%</h3>
+          <p>Open Source</p>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="landing-footer">
+        <p>
+          Built with vanilla HTML, CSS, and JavaScript • No frameworks, no dependencies<br>
+          All game progress stored locally in your browser
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== GAME PAGES ==================== -->
+  <div id="game1" class="page"></div>
+  <div id="game2" class="page"></div>
+  <div id="game3" class="page"></div>
+
+  <!-- ==================== NAVIGATION SCRIPT ==================== -->
+  <script>
+    // The complete games will be loaded here
+    const GAME_HTML = {};
